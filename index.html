@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Wason Selection Task | Necessary & Sufficient Conditions</title>
+<style>
+:root{color-scheme:light;--ink:#17233b;--muted:#526074;--blue:#2563eb;--pale:#eff5ff;--border:#dce5f2;--bg:#f7f9fd;--ok:#087b59;--bad:#ae3636}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font:17px/1.52 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:1120px;margin:0 auto;padding:clamp(22px,5vw,62px) clamp(16px,4vw,40px) 52px}
+.kicker{color:#527098;letter-spacing:.15em;font-size:.76rem;font-weight:760;text-transform:uppercase}
+h1{font-size:clamp(32px,4vw,53px);letter-spacing:-.042em;line-height:1.13;margin:8px 0 18px}p{margin:.55em 0}
+.intro{font-size:clamp(17px,2vw,22px);color:var(--muted);max-width:790px}
+.rule{margin:34px 0 20px;background:#fff;border:1px solid var(--border);border-left:6px solid var(--blue);box-shadow:0 7px 30px #1e356008;border-radius:13px;padding:22px 27px}
+.rule .small{font-size:12px;color:var(--muted);font-weight:750;letter-spacing:.12em;text-transform:uppercase}.rule strong{font-size:clamp(20px,2.4vw,29px);display:block;line-height:1.35;margin-top:4px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(10px,2vw,22px);margin-top:24px}
+.card{min-height:clamp(125px,18vw,204px);border:2px solid #c9d5e4;border-radius:18px;background:white;color:var(--ink);box-shadow:0 8px 0 #e1e7f0,0 14px 28px #1f3d6810;font-size:clamp(48px,8vw,94px);font-weight:700;cursor:pointer;position:relative;transition:transform .12s ease,background .12s ease,border-color .12s ease}
+.card:focus-visible,button:focus-visible{outline:4px solid #a4c4ff;outline-offset:4px}
+.card:hover{transform:translateY(-3px)}.card[aria-pressed=true]{background:var(--pale);border-color:var(--blue);transform:translateY(-6px);box-shadow:0 8px 0 #bed2fb,0 15px 26px #19488d20}
+.card[aria-pressed=true]::after{content:'SELECTED';font-size:11px;letter-spacing:.09em;position:absolute;right:10px;top:10px;background:var(--blue);color:#fff;padding:4px 8px;border-radius:100px}
+.question{margin-top:26px;font-weight:650;font-size:clamp(18px,2vw,23px)}.hint{font-size:15px;color:var(--muted)}
+.actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:24px}button.action{padding:12px 22px;border-radius:10px;border:1px solid var(--blue);background:var(--blue);color:white;font:inherit;font-weight:700;cursor:pointer}.action.secondary{background:#fff;border-color:#bdcadb;color:#273b5c}.action:disabled{opacity:.45;cursor:not-allowed}.status{font-size:14px;color:var(--muted)}
+.feedback{display:none;margin:28px 0 0;background:white;border:1px solid var(--border);border-radius:13px;padding:23px 27px}.feedback.show{display:block}.feedback h2{font-size:24px;margin:0 0 10px}.feedback p{margin:8px 0}.correct{color:var(--ok)}.incorrect{color:var(--bad)}
+.reasons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}.reason{border:1px solid var(--border);background:#f8fbff;border-radius:10px;padding:13px 15px}.reason strong{display:block;font-size:18px;margin-bottom:2px}.reason p{font-size:15px;margin:0;color:var(--muted)}
+footer{margin-top:30px;font-size:14px;color:var(--muted)}
+@media(max-width:600px){.cards{gap:8px}.card{min-height:116px;border-radius:12px}.card[aria-pressed=true]::after{right:4px;top:4px;font-size:8px;padding:3px 5px}.reasons{grid-template-columns:1fr}.rule{padding:18px}.feedback{padding:18px}}
+@media(prefers-reduced-motion:reduce){.card{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="kicker">Interactive exercise · Logic of conditionals</div>
+  <h1>Which cards would you turn over?</h1>
+  <p class="intro">Each card has a letter on one side and a number on the other. You can see only one side of each card.</p>
+  <section class="rule" aria-label="Rule to test">
+    <span class="small">The rule</span>
+    <strong>If a card has a vowel on one side, then it has an even number on the other.</strong>
+  </section>
+  <section class="cards" aria-label="Four selectable cards">
+    <button class="card" type="button" data-card="E" aria-pressed="false" aria-label="Select card E">E</button>
+    <button class="card" type="button" data-card="K" aria-pressed="false" aria-label="Select card K">K</button>
+    <button class="card" type="button" data-card="4" aria-pressed="false" aria-label="Select card 4">4</button>
+    <button class="card" type="button" data-card="7" aria-pressed="false" aria-label="Select card 7">7</button>
+  </section>
+  <div class="question">Which card(s) must you turn over to check whether the rule has been violated?</div>
+  <p class="hint">Select all and only the cards you need. Then check your answer.</p>
+  <div class="actions">
+    <button id="check" class="action" type="button" disabled>Check answer</button>
+    <button id="reset" class="action secondary" type="button">Reset</button>
+    <span class="status" id="status" role="status">No cards selected</span>
+  </div>
+  <section id="feedback" class="feedback" aria-live="polite" aria-label="Explanation">
+    <h2 id="result"></h2>
+    <p>The only way to violate <strong>if P, then Q</strong> is to have <strong>P and not Q</strong>.</p>
+    <div class="reasons">
+      <div class="reason"><strong>E · Must check</strong><p>A vowel with an odd number on the back would break the rule.</p></div>
+      <div class="reason"><strong>7 · Must check</strong><p>An odd number with a vowel on the back would break the rule.</p></div>
+      <div class="reason"><strong>K · No need</strong><p>The rule says nothing about what must be on the back of a consonant.</p></div>
+      <div class="reason"><strong>4 · No need</strong><p>An even number could have either a vowel or a consonant on the back.</p></div>
+    </div>
+    <p style="margin-top:19px"><strong>Takeaway:</strong> P is sufficient for Q; Q is necessary for P. To test the conditional, look for a possible counterexample: <strong>P ∧ ¬Q</strong>.</p>
+  </section>
+  <footer>For classroom use · Fully self-contained; works offline. Press Tab to navigate and Space/Enter to select cards.</footer>
+</main>
+<script>
+(function(){
+  const chosen=new Set();
+  const cards=Array.from(document.querySelectorAll('[data-card]'));
+  const check=document.getElementById('check');
+  const reset=document.getElementById('reset');
+  const status=document.getElementById('status');
+  const feedback=document.getElementById('feedback');
+  const result=document.getElementById('result');
+  function sync(){
+    cards.forEach(c=>c.setAttribute('aria-pressed',String(chosen.has(c.dataset.card))));
+    check.disabled=chosen.size===0;
+    status.textContent=chosen.size?`Selected: ${['E','K','4','7'].filter(k=>chosen.has(k)).join(', ')}`:'No cards selected';
+    feedback.classList.remove('show');
+  }
+  cards.forEach(c=>c.addEventListener('click',()=>{const id=c.dataset.card;chosen.has(id)?chosen.delete(id):chosen.add(id);sync()}));
+  check.addEventListener('click',()=>{
+    const correct=chosen.size===2&&chosen.has('E')&&chosen.has('7');
+    result.textContent=correct?'Correct — E and 7.':'The cards to check are E and 7.';
+    result.className=correct?'correct':'incorrect';
+    feedback.classList.add('show');
+    feedback.scrollIntoView({block:'nearest',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+  });
+  reset.addEventListener('click',()=>{chosen.clear();sync();cards[0].focus()});
+  sync();
+})();
+</script>
+</body>
+</html>
